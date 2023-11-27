@@ -152,4 +152,29 @@ module.exports = function (app) {
       }
   });
 
+  // Ruta para obtener las asistencias de los estudiantes en un grupo
+  app.get('/asistencias/:grupoId', async (req, res) => {
+    const grupoId = req.params.grupoId;
+
+    try {
+      const grupo = await Grupo.findById(grupoId).exec();
+
+      if (!grupo) {
+        res.status(404).send({ message: "Grupo not found" });
+      } else {
+        const asistenciasEstudiantes = grupo.estudiantes.map((estudiante) => {
+          return {
+            cedula: estudiante.cedula,
+            asistencia_ausencias: estudiante.asistencia_ausencias,
+            asistencia_ausencias_justificadas: estudiante.asistencia_ausencias_justificadas,
+            asistencia_presente: estudiante.asistencia_presente,
+            asistencia_tardias: estudiante.asistencia_tardias,
+          };
+        });
+        res.json(asistenciasEstudiantes);
+      }
+    } catch (error) {
+      res.status(500).send(err);
+    }
+  });
 }

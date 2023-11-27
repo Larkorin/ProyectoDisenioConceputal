@@ -1,6 +1,8 @@
 // controllers/MatriculaController.js
 
 const Matricula = require('../models/Matricula.js');
+const { carrerasEmitter, emitCarreraUpdate } = require('./Observer.js'); 
+const IteratorLab = require('./Iterator.js');
 
 module.exports = function (app) {
 
@@ -50,22 +52,32 @@ module.exports = function (app) {
 
     //Mostrar Cursos Matriculados por Estudiante 
     app.get('/cursos-matriculados/:cedulaEstudiante', async (req, res) => {
-    const cedulaEstudiante = req.params.cedulaEstudiante;
+        const cedulaEstudiante = req.params.cedulaEstudiante;
     
-    try {
-        const matricula = await Matricula.findOne({ cedula: cedulaEstudiante }).exec();
+        try {
+            const matricula = await Matricula.findOne({ cedula: cedulaEstudiante }).exec();
     
-        if (matricula && matricula.cursos.length > 0) {
-        const cursosMatriculados = await Curso.find({ codigo: { $in: matricula.cursos.map((curso) => curso.codigo) } }).exec();
-        res.send(cursosMatriculados);
-        } else {
-        res.status(404).send({ message: 'El estudiante no está matriculado en ningún curso.' });
+            if (matricula && matricula.cursos.length > 0) {
+                // Crear una instancia de Iterator con la lista de cursos matriculados
+                const matriculaIterator = new IteratorLab(matricula.cursos);
+                const cursosMatriculados = [];
+    
+                // Iterar sobre los cursos matriculados y agregar cada código de curso al nuevo arreglo
+                matriculaIterator.each(cursoMatriculado => {
+                    cursosMatriculados.push(cursoMatriculado.codigo);
+                });
+    
+                // Buscar los detalles de los cursos utilizando los códigos obtenidos
+                const detallesCursosMatriculados = await Curso.find({ codigo: { $in: cursosMatriculados } }).exec();
+                res.send(detallesCursosMatriculados);
+            } else {
+                res.status(404).send({ message: 'El estudiante no está matriculado en ningún curso.' });
+            }
+        } catch (error) {
+            res.status(500).send(error);
         }
-    } catch (error) {
-        res.status(500).send(err);
-    }
     });
-
+    
     // http://localhost:3000/matricula/historial/0192409325
     /*
     En esta funcion HTTP se puede implementar el patron Iterador
@@ -75,17 +87,25 @@ module.exports = function (app) {
     y se podria guardar en una variable en forma de lista.
     */
     app.get('/matricula/historial/:cedula', async (req, res) => {
-    try {
-        const historialMatriculas = await Matricula.find({ cedula: req.params.cedula });
-        if (historialMatriculas.length > 0) {
-            res.send(historialMatriculas);
-        } else {
-            res.status(404).send({ message: 'No enrollment records found for the student.' });
+        try {
+            const historialMatriculas = await Matricula.find({ cedula: req.params.cedula });
+    
+            if (historialMatriculas.length > 0) {
+                // Crear una instancia de Iterator con la lista de historial de matrículas
+                const matriculaIterator = new IteratorLab(historialMatriculas);
+                const historialIterado = [];
+    
+                // Iterar sobre el historial de matrículas y agregar cada registro a un nuevo arreglo
+                matriculaIterator.each(matricula => {
+                    historialIterado.push(matricula);
+                });
+    
+                res.send(historialIterado);
+            } else {
+                res.status(404).send({ message: 'No enrollment records found for the student.' });
+            }
+        } catch (err) {
+            res.status(500).send(err);
         }
-    } catch (err) {
-        res.status(500).send(err);
-    }
-});
-
-      
+    });      
 }

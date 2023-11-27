@@ -9,12 +9,14 @@ module.exports = function (app) {
     app.post('/matricula/codigo/:codigo/cedula/:cedula', async (req, res) => {
         try {
             let nuevoCurso = { codigo: req.params.codigo };
-            Matricula.updateOne({ cedula: req.params.cedula }, {
-                $push: {
-                    cursos:
-                        nuevoCurso
-                }
-            });
+            await Matricula.updateOne(
+                { cedula: req.params.cedula },
+                { $push: { cursos: nuevoCurso } }
+            );
+
+            // Notificar a los observadores que se agregó un curso a la matrícula
+            emitMatriculaUpdate(req.params.cedula);
+
             res.status(200).send({ message: 'Curso agregado con éxito' });
         } catch (err) {
             res.status(500).send(err);
@@ -24,15 +26,23 @@ module.exports = function (app) {
     //http://localhost:3000/matricula/codigo/2/cedula/1-1913-1405 a la Programación
     app.delete('/matricula/eliminar-curso-matriculado/codigo/:codigo/cedula/:cedula', async (req, res) => {
         try {
-            let nuevoCurso = { codigo: req.params.codigo };
-            Matricula.updateOne({ cedula: req.params.cedula }, {
-                $push: {
-                    cursos:
-                        nuevoCurso
-                }
-            });
+            // Código para eliminar el curso matriculado utilizando $pull
+            const result = await Matricula.updateOne(
+                { cedula: req.params.cedula },
+                { $pull: { cursos: { codigo: req.params.codigo } } }
+            );
 
-            res.status(200).send({ message: 'Curso eliminado con éxito' });
+            // Verificar si se encontró y se modificó el documento
+            if (result.matchedCount > 0 && result.modifiedCount > 0) {
+                // Notificar a los observadores que se eliminó un curso matricu lado
+                emitMatriculaBorraUpdate(req.params.cedula);
+
+                res.status(200).send({ message: 'Curso eliminado con éxito' });
+            } else if (result.matchedCount > 0 && result.modifiedCount === 0) {
+                res.status(404).send({ message: 'El curso no fue encontrado en esta matrícula' });
+            } else {
+                res.status(404).send({ message: 'Matrícula no encontrada' });
+            }
         } catch (err) {
             res.status(500).send(err);
         }

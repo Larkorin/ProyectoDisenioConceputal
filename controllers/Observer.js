@@ -1,9 +1,8 @@
 const EventEmitter = require('events');
 const carrerasEmitter = new EventEmitter();
 const matriculaEmitter = new EventEmitter();
-const matriculaEmitter = new EventEmitter();
 
-// Función para emitir eventos cuando se modifica una carrera
+// Funciï¿½n para emitir eventos cuando se modifica una carrera
 const emitCarreraUpdate = (codigoCarrera) => {
     carrerasEmitter.emit('carreraUpdate', codigoCarrera);
 };

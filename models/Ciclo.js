@@ -2,7 +2,7 @@
 
 const mongoose = require('mongoose');
 
-const cursoSchema = new mongoose.Schema({
+const cicloSchema = new mongoose.Schema({
   codigo: Number,
   annio: Number,
   numero: Number,

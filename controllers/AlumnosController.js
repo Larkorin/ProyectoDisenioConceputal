@@ -1,5 +1,5 @@
 const Alumno = require('../models/Alumno.js');
-
+const PersonaAbstractFactory = require('../models/Persona.js');
 
 module.exports = function (app) {
 
@@ -13,9 +13,8 @@ module.exports = function (app) {
         try {
             // Consulta la base de datos para obtener una lista de alumnos
             const alumnos = await Alumno.find();
-
             // Crea una instancia de la fábrica PersonaFactory
-            const personaFactory = new PersonaFactory();
+            const personaFactory = new PersonaAbstractFactory();
 
             // Convierte los datos de alumnos en objetos Alumno utilizando la fábrica
             const alumnosObjetos = alumnos.map(alumno => personaFactory.crearAlumno(
@@ -32,6 +31,7 @@ module.exports = function (app) {
         } catch (err) {
             // En caso de error, responde con un código de estado HTTP 500 (Error interno del servidor)
             res.status(500).send(err);
+            console.log(err)
         }
     });
 

@@ -15,7 +15,7 @@ async function connectDB() {
     if (!connectionInstance) {
         try {
             // Si no existe, crea una nueva conexión.
-            connectionInstance = await mongoose.connect('mongodb://localhost:27017/ProyectoClase', {
+            connectionInstance = await mongoose.connect('mongodb://127.0.0.1:27017/ProyectoClase', {
                 useNewUrlParser: true,
                 useUnifiedTopology: true,
             });

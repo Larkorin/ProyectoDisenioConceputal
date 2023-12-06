@@ -1,5 +1,5 @@
 const Profesor = require("../models/Profesor.js");
-const PersonaAbstractFactory = require("../models/Persona.js");
+const PersonaAbstractFactory = require('../models/Persona.js');
 
 const fabrica = new PersonaAbstractFactory();
 
@@ -8,6 +8,7 @@ module.exports = function (app) {
   app.get("/profesor/nombre/:nombre", async (req, res) => {
     try {
       const profes = await Profesor.find({ nombre: req.params.nombre });
+      console.log(profes)
       res.send(profes);
 
       if (profes.length === 0) {
@@ -79,6 +80,7 @@ module.exports = function (app) {
       res.status(201).send(profesorGuardado);
     } catch (err) {
       res.status(500).send(err);
+      console.log(err)
     }
   });
 };

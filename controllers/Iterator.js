@@ -1,9 +1,9 @@
 var IteratorLab = function (list) {
     this.index = 0;
-    this.list = list;
+    this.list = list; // store the list of courses
 }
 
-// Agrega metodos de la clase IteratorLab
+// Modify the prototype of IteratorLab
 IteratorLab.prototype = {
     // Método para posicionar el iterador al principio de la lista y devolver el primer elemento
     first: function () {
@@ -12,13 +12,13 @@ IteratorLab.prototype = {
     },
     // Metodo para obtener el siguiente elemento de la lista y avanzar el indice
     next: function () {
-        // Devuelve el elemento actual e incrementa el indice para apuntar al siguiente
-        return this.items[this.index++];
+        // Use this.list instead of this.items
+        return this.list[this.index++];
     },
     // Metodo que verifica si hay mas elementos en la lista para iterar
     hasNext: function () {
-        // Compara el indice actual con la longitud de la lista para determinar si hay mas elementos
-        return this.index <= this.items.length;
+        // Use this.list.length instead of this.items.length
+        return this.index < this.list.length;
     },
     // Metodo para reiniciar el indice y volver al principio de la lista
     reset: function () {
@@ -34,4 +34,3 @@ IteratorLab.prototype = {
     }
 }
 module.exports = IteratorLab;
-

@@ -1,3 +1,5 @@
+const Alumno = require('./Alumno');
+const Profesor = require('./Profesor');
 class PersonaAbstractFactory {
     crearAlumno(cedula, nombre, telefono, email, fecha_de_nacimiento, carrera) {
         return new Alumno({
@@ -19,3 +21,4 @@ class PersonaAbstractFactory {
         });
     }
 }
+module.exports = PersonaAbstractFactory;

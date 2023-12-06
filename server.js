@@ -12,6 +12,8 @@ app.use(bodyParser.json());
 
 const alumnosController = require('./controllers/AlumnosController.js');
 alumnosController(app);
+const cicloController = require('./controllers/CicloController.js');
+cicloController(app);
 const cursosController = require('./controllers/CursoController.js');
 cursosController(app);
 const carrerasController = require('./controllers/CarreraController.js');

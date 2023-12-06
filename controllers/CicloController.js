@@ -1,4 +1,5 @@
 const Ciclo = require('../models/Ciclo.js');
+const Matricula = require('../models/Matricula.js');
 
 module.exports = function(app) {
     app.get('/ciclo-activo', async (req, res) => {
@@ -14,6 +15,20 @@ module.exports = function(app) {
         }
     });
 
+    //http://localhost:3000/ciclos/historial/0192409325
+    app.get('/ciclos/historial/:cedula', async (req, res) => {
+        try {
+            const historialMatriculas = await Matricula.find({ cedula: req.params.cedula });
+            if (historialMatriculas.length > 0) {
+                res.send(historialMatriculas);
+            } else {
+                res.status(404).send({ message: 'No enrollment records found for the student.' });
+            }
+        } catch (err) {
+            res.status(500).send(err);
+        }
+    });
+
     //http://localhost:3000/ciclos/annio/2024
     /*
     En esta funcion HTTP se puede implementar el patron Iterador
@@ -22,17 +37,17 @@ module.exports = function(app) {
     y se podria guardar en una variable en forma de lista.
     */
     app.get('/ciclos/annio/:annio', async (req, res) => {
-    try {
-        const annio = parseInt(req.params.annio); 
-        const ciclos = await Ciclo.find({ annio: annio });
-        if (ciclos.length > 0) {
-            res.send(ciclos);
-        } else {
-            res.status(404).send({ message: 'No cycles found for the year.' });
+        try {
+            const ciclos = await Ciclo.find({ annio: req.params.annio });
+            console.log(ciclos);
+            if (ciclos.length > 0) {
+                res.send(ciclos);
+            } else {
+                res.status(404).send({ message: 'No cycles found for the year.' });
+            }
+        } catch (err) {
+            res.status(500).send({ message: 'Error.' });
         }
-    } catch (err) {
-        res.status(500).send(err);
-    }
     });
 
     //http://localhost:3000/ciclo/activar/1

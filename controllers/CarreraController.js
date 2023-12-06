@@ -29,7 +29,7 @@ module.exports = function(app) {
                 cursosIterator.each(course => {
                     cursos.push(course);
                 });
-
+                console.log(cursos)
                 // Envía la lista de cursos como respuesta a la solicitud
                 res.send(cursos);
             } else {

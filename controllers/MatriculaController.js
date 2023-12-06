@@ -92,20 +92,21 @@ module.exports = function (app) {
     
             if (historialMatriculas.length > 0) {
                 // Crear una instancia de Iterator con la lista de historial de matrículas
-                const matriculaIterator = new IteratorLab(historialMatriculas);
+                
+                const matriculaIterator = new IteratorLab(historialMatriculas[0].cursos);
                 const historialIterado = [];
-    
+                console.log(matriculaIterator);
                 // Iterar sobre el historial de matrículas y agregar cada registro a un nuevo arreglo
                 matriculaIterator.each(matricula => {
                     historialIterado.push(matricula);
                 });
-    
                 res.send(historialIterado);
             } else {
                 res.status(404).send({ message: 'No enrollment records found for the student.' });
             }
         } catch (err) {
             res.status(500).send(err);
+            console.log(err)
         }
     });      
 }

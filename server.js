@@ -9,8 +9,8 @@ const PORT = 3000;
 // Conexión a MongoDB
 connectDB();
 
+app.use(cors());
 app.use(bodyParser.json());
-
 const alumnosController = require('./controllers/AlumnosController.js');
 alumnosController(app);
 const cicloController = require('./controllers/CicloController.js');

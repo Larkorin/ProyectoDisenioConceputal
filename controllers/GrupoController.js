@@ -33,34 +33,36 @@ module.exports = function (app) {
     }
   );
 
-  //http://localhost:3000/registrar-notas/a316247a8188a594ff826d41
-  app.post("/registrar-notas/:grupoId", async (req, res) => {
+  //http://localhost:3000/registrar-notas/a316247a8188a594ff826d41/cedulaAlumno/007-123456-0006G/nota/80
+  app.put('/registrar-notas/:grupoId/cedulaAlumno/:cedulaAlumno/nota/:nota', async (req, res) => {
     const grupoId = req.params.grupoId;
-    const notas = req.body.notas; // Espera un objeto con las notas
-
+    const cedulaAlumno = req.params.cedulaAlumno;
+    const nuevaNota = parseInt(req.params.nota);
+  
     try {
       const grupo = await Grupo.findById(grupoId).exec();
-
+  
       if (!grupo) {
-        res.status(404).send({ message: "Grupo no encontrado." });
-      } else {
-        if (grupo.estudiantes) {
-          for (const estudiante of grupo.estudiantes) {
-            const cedula = estudiante.cedula;
-            if (notas[cedula] !== undefined) {
-              estudiante.nota = notas[cedula]; // Actualiza la nota
-            }
-          }
-          await grupo.save(); // Guarda las actualizaciones en el grupo
-          res.send({ mensaje: "Notas actualizadas con éxito." });
-        } else {
-          res
-            .status(404)
-            .send({ message: "No hay estudiantes en este grupo." });
-        }
+        return res.status(404).send({ message: 'Grupo no encontrado.' });
       }
-    } catch (err) {
-      res.status(500).send(err);
+  
+      // Buscar el estudiante en el grupo
+      const estudiante = grupo.estudiantes.find(est => est.cedula === cedulaAlumno);
+  
+      if (!estudiante) {
+        return res.status(404).send({ message: 'Estudiante no encontrado en el grupo.' });
+      }
+  
+      // Actualizar la nota del estudiante
+      estudiante.nota = nuevaNota;
+  
+      // Guardar el grupo actualizado
+      await grupo.save();
+  
+      res.status(200).send({ message: 'Nota actualizada correctamente.' });
+    } catch (error) {
+      console.error(error);
+      res.status(500).send({ message: 'Error al actualizar la nota del estudiante.' });
     }
   });
 
